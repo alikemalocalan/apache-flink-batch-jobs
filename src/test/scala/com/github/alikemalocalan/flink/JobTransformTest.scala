@@ -1,9 +1,19 @@
 package com.github.alikemalocalan.flink
 
 import org.apache.flink.api.scala._
+import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration
+import org.apache.flink.test.util.MiniClusterWithClientResource
+import org.junit.ClassRule
 import org.scalatest.{FunSuite, Matchers}
 
 class JobTransformTest extends FunSuite with Matchers {
+
+  @ClassRule
+  val miniClusterResource = new MiniClusterWithClientResource(
+    new MiniClusterResourceConfiguration.Builder()
+      .setNumberTaskManagers(1)
+      .setNumberSlotsPerTaskManager(1)
+      .build())
 
 
   val env: ExecutionEnvironment = ExecutionEnvironment.getExecutionEnvironment
@@ -12,11 +22,11 @@ class JobTransformTest extends FunSuite with Matchers {
   test("allEventForUser") {
     val userActivity = env.fromCollection(CsvExampleData.exampleCsvList)
     val result: List[Event] = JobTransform.allEventForUser(userActivity, 47).collect().toList
-    result should contain theSameElementsAs List(
-      Event("add", 618),
-      Event("click", 618),
-      Event("remove", 618),
-      Event("view", 618))
+    result should contain theSameElementsAs
+      List(Event("add", 618),
+        Event("click", 618),
+        Event("remove", 618),
+        Event("view", 618))
   }
 
   test("topUsers") {
@@ -28,20 +38,20 @@ class JobTransformTest extends FunSuite with Matchers {
   test("uniqProductView") {
     val userActivity = env.fromCollection(CsvExampleData.exampleCsvList)
     val result = JobTransform.uniqProductView(userActivity).collect().toList
-    result should contain theSameElementsAs List(
-      ProductCount(618, 1),
-      ProductCount(496, 1),
-      ProductCount(644, 2))
+    result should contain theSameElementsAs
+      List(ProductCount(618, 1),
+        ProductCount(496, 1),
+        ProductCount(644, 2))
   }
 
   test("uniqEvent") {
     val userActivity = env.fromCollection(CsvExampleData.exampleCsvList)
     val result = JobTransform.uniqEvent(userActivity).collect().toList
-    result should contain theSameElementsAs List(
-      EventCount("add", 2),
-      EventCount("remove", 2),
-      EventCount("click", 2),
-      EventCount("view", 2))
+    result should contain theSameElementsAs
+      List(EventCount("add", 2),
+        EventCount("remove", 2),
+        EventCount("click", 2),
+        EventCount("view", 2))
   }
 
   test("productViewByUser") {

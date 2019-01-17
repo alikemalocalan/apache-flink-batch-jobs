@@ -1,44 +1,72 @@
 package com.github.alikemalocalan.flink
 
-import org.apache.flink.api.scala.ExecutionEnvironment
-import org.junit.rules.TemporaryFolder
-import org.junit.{Rule, Test}
+import java.io.File
+
+import com.github.alikemalocalan.flink.JobTransform._
+import org.apache.flink.api.scala._
+import org.apache.flink.test.util.AbstractTestBase
+import org.apache.flink.util.FileUtils
+import org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder
+import org.junit.Assert.assertThat
+import org.junit.Test
+import org.scalatest.Matchers
+
+import scala.collection.JavaConverters.asJavaIterableConverter
 
 
-class MainFlowTest {
-
-  //  val miniClusterResource: MiniClusterResourceConfiguration = new MiniClusterResourceConfiguration.Builder()
-  //    .setNumberTaskManagers(1)
-  //    .setNumberSlotsPerTaskManager(1)
-  //    .build()
-
-  //@ClassRule
-  //val testEnv: TestEnvironment = new MiniClusterWithClientResource(miniClusterResource)
-
-
-  val _temporaryFolder = new TemporaryFolder
+class MainFlowTest extends AbstractTestBase with Matchers {
 
   @Test
   def testMain(): Unit = {
-    import org.apache.flink.util.FileUtils
 
-    val inputFile = TEMPORARY_FOLDER.newFile
-    val outputPath = TEMPORARY_FOLDER.newFile
-    FileUtils.writeFileUtf8(inputFile, CsvExampleData.caseCSV())
-    try {
-      val env = ExecutionEnvironment.getExecutionEnvironment
-      MainFlow.jobExecution(env, inputFile.getAbsolutePath, outputPath.toURI.toString)
-    }
-    catch {
-      case e: Throwable => e.printStackTrace()
-    }
-    finally try {
-      println(outputPath.list())
-      FileUtils.deleteDirectory(TEMPORARY_FOLDER.getRoot)
-    }
+
+    val inputFile = createTempFile("inputcsv", CsvExampleData.toCsvStr)
+    val env = ExecutionEnvironment.getExecutionEnvironment
+
+
+    val userActivity: DataSet[UserAction] = env.readCsvFile[UserAction](
+      filePath = inputFile,
+      fieldDelimiter = "|",
+      ignoreFirstLine = true
+    )
+
+    // 1- Unique Product View counts by ProductId
+    val resultUniqProductView: List[ProductCount] = uniqProductView(userActivity).collect().toList
+
+    // 2- Unique Event counts
+    val resultUniqEvent = uniqEvent(userActivity).collect().toList
+
+    // 3- Top 5 Users who fulfilled all the events (view,add,remove,click)
+    val resultTopUsers = topUsers(userActivity).collect().toList
+
+    // 4- All events of #UserId : 47
+    val resultAllEventForUser = allEventForUser(userActivity, 47).collect().toList
+
+    // 5- Product Views of #UserId : 47
+    val resultProductView = productViewByUser(userActivity, 47).collect().toList
+
+    FileUtils.deleteDirectory(new File(inputFile))
+
+    assertThat(resultUniqProductView.asJava, containsInAnyOrder(
+      ProductCount(618, 1),
+      ProductCount(496, 1),
+      ProductCount(644, 2)
+    ))
+    assertThat(resultUniqEvent.asJava, containsInAnyOrder(
+      EventCount("add", 2),
+      EventCount("remove", 2),
+      EventCount("click", 2),
+      EventCount("view", 2)
+    ))
+    assertThat(resultTopUsers.asJava, containsInAnyOrder(FulfilledUser(47, 1)))
+    assertThat(resultAllEventForUser.asJava, containsInAnyOrder(
+      Event("add", 618),
+      Event("remove", 618),
+      Event("click", 618),
+      Event("view", 618)
+    ))
+    assertThat(resultProductView.asJava, containsInAnyOrder(ProductCount(618, 1)))
+
   }
-
-  @Rule
-  def TEMPORARY_FOLDER: TemporaryFolder = _temporaryFolder
 
 }
