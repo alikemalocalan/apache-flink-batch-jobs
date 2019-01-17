@@ -1,4 +1,4 @@
-name := "ty-flink-jobs"
+name := "apache-flink-batch-jobs"
 
 version := "0.1"
 
@@ -16,6 +16,9 @@ libraryDependencies ++= {
     "ch.qos.logback" % "logback-classic" % "1.2.3",
     "org.apache.flink" %% "flink-test-utils" % flinkVersion % Test,
     "org.apache.flink" %% "flink-tests" % flinkVersion % Test,
-    "org.scalatest" %% "scalatest" % "3.0.5" % Test
+    "org.scalatest" %% "scalatest" % "3.0.5" % Test,
+    "org.apache.flink" %% "flink-runtime" % flinkVersion % Test classifier "tests",
+    "org.apache.flink" %% "flink-runtime-web" % flinkVersion % Test,
+    "org.hamcrest" % "hamcrest-library" % "1.3" % Test
   )
 }

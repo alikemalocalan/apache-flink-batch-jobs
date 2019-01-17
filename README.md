@@ -1,18 +1,22 @@
-# docker-flink
+# Apache-Flink-Batch-Jobs
 
 
 ## Informations
 
 * Based on Alpine official Image [openjdk:8-jre-alpine]
-* Install [Docker](https://www.docker.com/)
+* Install [Docker](https://www.docker.com/) and [Sbt](https://www.scala-sbt.org/)
 
 
-## Build
+## Run With One Command
 
-        docker build --rm=true -t ty-flink-1.7:lastest .
+        ./deploy-docker.sh 
 
-## Usage
-        docker run --name ty-flink-jobs --link flink-master:flink-master -d ty-flink-1.7:lastest
+## Build Docker 
+
+        docker build --rm=true -t apache-flink-batch-jobs:lastest .
+
+## Run Docker Image
+        docker-compose -f docker-compose.yml up -d
 
 
 ## UI Links
@@ -24,18 +28,15 @@ docker exec -it $(docker ps --filter name=ty-flink-1.7 --format={{.ID}}) flink r
 
 * Open Terminal inside Docker image
 
-        docker exec -it  $(docker-compose ps -q ty-flink-1.7) bash
+        docker exec -it  $(docker ps --filter name=flink-jobs --format={{.ID}}) bash
         
 
 * With Root Permission
 
-        docker exec -it -u 0  $(docker-compose ps -q ty-flink-1.7) bash
-
+        docker exec -it -u 0 $(docker ps --filter name=flink-jobs --format={{.ID}}) bash
  
 ## Scale the number of workers
 
 Easy scaling using docker-compose:
 
         docker-compose scale worker=5
-
-This can be used to scale to a multi node setup using docker swarm.

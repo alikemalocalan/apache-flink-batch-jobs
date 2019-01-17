@@ -1,9 +1,11 @@
 version: '2'
 services:
- flink-submit:
-   image: ty-flink-1.7:lastest
-   container_name: flink-jobs
+  apache-flink-batch-jobs:
+   image: apache-flink-batch-jobs:latest
+   container_name: apache-flink-batch-jobs
    entrypoint: ["/submit.sh"]
+   volumes:
+     - ./result:/usr/src/app/result
    ports:
      - "8080:8080"
      - "8081:8081"
