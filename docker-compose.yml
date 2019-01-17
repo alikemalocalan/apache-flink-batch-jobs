@@ -6,6 +6,7 @@ services:
    entrypoint: ["/submit.sh"]
    volumes:
      - ./result:/usr/src/app/result
+     - ./data:/usr/src/app/data
    ports:
      - "8080:8080"
      - "8081:8081"
