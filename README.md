@@ -11,20 +11,23 @@
 
         ./deploy-docker.sh 
 
+ and follow jobs via [Apache Flink Web UI](http://localhost:8081)
+
 ## Build Docker 
 
         docker build --rm=true -t apache-flink-batch-jobs:lastest .
 
 ## Run Docker Image
+        
         docker-compose -f docker-compose.yml up -d
 
 
-## UI Links
+## Submit Any Job
 
-docker exec -it $(docker ps --filter name=ty-flink-1.7 --format={{.ID}}) flink run -c class.Name /new/job.jar
+        docker exec -it $(docker ps --filter name=ty-flink-1.7 --format={{.ID}}) flink run -c class.Name /new/job.jar
 
 
-## TRİCKS
+## Others
 
 * Open Terminal inside Docker image
 
@@ -35,8 +38,6 @@ docker exec -it $(docker ps --filter name=ty-flink-1.7 --format={{.ID}}) flink r
 
         docker exec -it -u 0 $(docker ps --filter name=flink-jobs --format={{.ID}}) bash
  
-## Scale the number of workers
-
-Easy scaling using docker-compose:
+* Scale the number of workers
 
         docker-compose scale worker=5
