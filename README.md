@@ -31,12 +31,12 @@
 
 * Open Terminal inside Docker image
 
-        docker exec -it  $(docker ps --filter name=flink-jobs --format={{.ID}}) bash
+        docker exec -it  $(docker ps --filter name=apache-flink-batch-jobs --format={{.ID}}) bash
         
 
 * With Root Permission
 
-        docker exec -it -u 0 $(docker ps --filter name=flink-jobs --format={{.ID}}) bash
+        docker exec -it -u 0 $(docker ps --filter name=apache-flink-batch-jobs --format={{.ID}}) bash
  
 * Scale the number of workers
 
