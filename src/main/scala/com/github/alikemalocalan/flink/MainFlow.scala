@@ -33,24 +33,24 @@ object MainFlow {
 
     // 1- Unique Product View counts by ProductId
     val resultUniqProductView = uniqProductView(userActivity)
-      .writeAsCsv(outputPath + "jobResult_1", fieldDelimiter = "|")
+      .writeAsCsv(outputPath + "resultUniqProductView.csv", fieldDelimiter = "|")
 
     // 2- Unique Event counts
     val resultUniqEvent = uniqEvent(userActivity)
-      .writeAsCsv(outputPath + "jobResult_2", fieldDelimiter = "|")
+      .writeAsCsv(outputPath + "resultUniqEvent.csv", fieldDelimiter = "|")
 
 
     // 3- Top 5 Users who fulfilled all the events (view,add,remove,click)
     val resultTopUsers = topUsers(userActivity)
-      .writeAsCsv(outputPath + "jobResult_3", fieldDelimiter = "|")
+      .writeAsCsv(outputPath + "resultTopUsers.csv", fieldDelimiter = "|")
 
     // 4- All events of #UserId : 47
     val resultAllEventForUser = allEventForUser(userActivity, 47)
-      .writeAsCsv(outputPath + "jobResult_4", fieldDelimiter = "|")
+      .writeAsCsv(outputPath + "resultAllEventForUser.csv", fieldDelimiter = "|")
 
     // 5- Product Views of #UserId : 47
     val resultProductView = productViewByUser(userActivity, 47)
-      .writeAsCsv(outputPath + "jobResult_5", fieldDelimiter = "|")
+      .writeAsCsv(outputPath + "resultProductView.csv", fieldDelimiter = "|")
 
     env
   }
